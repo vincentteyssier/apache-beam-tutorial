@@ -12,7 +12,7 @@ class MyOptions(PipelineOptions):
                         help='Output for the pipeline',
                         default='./output/')
 
-# class to split a csv line by elements 
+# class to split a csv line by elements and keep only the columns we are interested in 
 class Split(beam.DoFn):
     def process(self, element):
         Date,Open,High,Low,Close,Volume = element.split(",")
@@ -25,14 +25,14 @@ class Split(beam.DoFn):
 
 class CollectOpen(beam.DoFn):
     def process(self, element):
-        # Returns a list of tuples containing Date and Open value
-        result = [(element['Date'], element['Open'])]
+        # Returns a list of tuples containing the 1 key and Open value
+        result = [(1, element['Open'])]
         return result
 
 class CollectClose(beam.DoFn):
     def process(self, element):
-        # Returns a list of tuples containing Date and Open value
-        result = [(element['Date'], element['Close'])]
+        # Returns a list of tuples containing the 1 key and Close value
+        result = [(1, element['Close'])]
         return result
 
 # class to calculate the standard deviation over an entire PCollection
@@ -76,7 +76,7 @@ output_filename = "c:/tmp/output/result.txt"
 options = PipelineOptions()
 
 with beam.Pipeline(options=options) as p:
-    # reading the csv and splitting lnies by elements we want to retain
+    # reading the csv and splitting lines by elements we want to retain
     csv_lines = (
             p | beam.io.ReadFromText(input_filename, skip_header_lines=1) |
             beam.ParDo(Split())
@@ -109,8 +109,3 @@ with beam.Pipeline(options=options) as p:
         beam.CoGroupByKey() | 
         beam.io.WriteToText(output_filename)
     )
-
-print ('Mean Open ') 
-print (mean_open)
-print ('\nMean Close ')
-print(mean_close)
