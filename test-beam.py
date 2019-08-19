@@ -69,8 +69,8 @@ class Standard_deviation(beam.DoFn):
             }
 
 # setting input and output files
-input_filename = "c:/tmp/sp500.csv"
-output_filename = "c:/tmp/output/result.txt"
+input_filename = "./data/sp500.csv"
+output_filename = "./output/result.txt"
 
 # instantiate the pipeline
 options = PipelineOptions()
